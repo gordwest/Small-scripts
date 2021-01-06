@@ -1,7 +1,18 @@
+import cv2, pytesseract
+from PIL import Image
 import pandas as pd
 from datetime import date, timedelta, datetime
 
-def getYears(year):
+pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
+
+def dividends(img_path):
+    img = cv2.imread(img_path)
+    raw_text = pytesseract.image_to_string(img)
+    text_arr = raw_text.strip().splitlines()
+    payments = [float(line.replace('$', '')) for line in raw_text.split('\n') if line.strip() != '']
+    return round(sum(payments),2)
+
+def getTimeFrame(year):
     nextYear = (datetime.strptime(year, '%Y') + timedelta(weeks=52+1)).strftime("%Y")
     startDate = datetime.strptime('{}-{}-{}'.format(year, '01', '01'), '%Y-%m-%d')
     endDate = datetime.strptime('{}-{}-{}'.format(nextYear, '01', '01'), '%Y-%m-%d')
@@ -48,14 +59,14 @@ def capitalGainsLoss(net_profit):
     if net_profit >= 0:
         return 'You need to claim taxes on ${} (plus dividends)'.format(round(net_profit,2))
     else:
-        return 'You can claim ${} worth of losses'.format(round(net_profit,2))
+        return 'You can claim ${} worth of losses'.format(abs(round(net_profit,2)))
 
 
 def main():
 
     # defines the year to calc for
     year = '2020'
-    startDate, endDate = getYears(year)
+    startDate, endDate = getTimeFrame(year)
 
     # read stock transactions
     trxns = pd.read_excel('C:/Users/gordi/Desktop/Documents/Stock Transactions.xlsx', 'Transactions')
@@ -88,7 +99,10 @@ def main():
 
         net_profit += profit # keep track of profit across all stocks
         print(stockRecap(shares_sold, round(trxns_subset.loc[i, 'Price (CAD)'],2), round(profit,2)))
-    print(capitalGainsLoss(net_profit)) # print gains/loss
+    print(capitalGainsLoss(net_profit) + ' for ' + year + '.\n') # print gains/loss
+
+    # add up dividend payments from image
+    print('${} of dividends were colleted in {}!'.format(dividends('C:/Users/gordi/Desktop/Dividends.png'), year))
     
 if __name__ == "__main__":
     main()
