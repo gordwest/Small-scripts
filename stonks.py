@@ -50,7 +50,7 @@ def getPortValue(excel_wb):
     """
     # open workwook and get portfolio value
     wb = openpyxl.load_workbook(excel_wb, data_only=True)
-    portfolio = wb.worksheets[1]
+    portfolio = wb.worksheets[0]
     port_value = portfolio['F9'].value
     print(f"Today's Portfolio Close: ${round(port_value,2)}")
     wb.close()
