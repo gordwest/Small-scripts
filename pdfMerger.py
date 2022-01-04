@@ -19,4 +19,4 @@ def mergePDFs(source_dir, output):
     merger.write(output)
     merger.close()
 
-mergePDFs('c:/users/gordi/Desktop/Hoffer_mdm13h_PDFs/', 'c:/users/gordi/Desktop/Hoffer_mdm13h_PDFs/combined.pdf')
+mergePDFs('c:/users/gordi/Desktop/PDFs/', 'c:/users/gordi/Desktop/combined.pdf')
