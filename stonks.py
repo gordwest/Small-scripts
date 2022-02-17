@@ -1,6 +1,6 @@
 import openpyxl, pyodbc
 import win32com.client
-from config import PORTFOLIO_WB
+from config import PORTFOLIO_WB, SERVER, DATABASE
 from openpyxl import Workbook
 from datetime import datetime
 
@@ -35,7 +35,9 @@ def refreshExcel(excel_wb):
     wb = xlapp.Workbooks.Open(excel_wb)
     wb.RefreshAll()
     xlapp.CalculateUntilAsyncQueriesDone()
+    xlapp.DisplayAlerts = False
     wb.Save()
+    wb.Close()
     xlapp.Quit()
 
 def getPortValue(excel_wb):
@@ -69,9 +71,6 @@ def getTodayDate():
 
 if __name__ == '__main__':
     
-    # SQLconfig
-    SERVER = 'localhost\SQLEXPRESS'
-    DATABASE = 'Stonks' 
     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+SERVER+';DATABASE='+DATABASE+';Trusted_Connection=yes;')
     cursor = cnxn.cursor()
     
@@ -79,6 +78,6 @@ if __name__ == '__main__':
 
     refreshExcel(PORTFOLIO_WB)
     port_value = getPortValue(PORTFOLIO_WB)
-    message = newDBEntry(current_datetime, port_value, cursor, cnxn)
+    # message = newDBEntry(current_datetime, port_value, cursor, cnxn)
 
-    print(message)
+    # print(message)
